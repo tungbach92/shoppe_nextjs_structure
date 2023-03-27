@@ -1,0 +1,24 @@
+steps:
+  - name: node:18-alpine
+    entrypoint: yarn
+    args:
+      - install
+  - name: node:18-alpine
+    entrypoint: yarn
+    args:
+      - run
+      - build:stg
+  - name: node:18-alpine
+    entrypoint: yarn
+    args:
+      - run
+      - export
+  - name: 'gcr.io/classfunc-com/firebase'
+    args: [ 'deploy','--only','hosting:${_HOSTING_SITE}-stg' ]
+    timeout: 600s
+#    env:
+#      - '_FIREBASE_TOKEN=$_FIREBASE_TOKEN'
+substitutions:
+  _HOSTING_SITE: 'my_hosting_site'
+options:
+  machineType: 'N1_HIGHCPU_8'

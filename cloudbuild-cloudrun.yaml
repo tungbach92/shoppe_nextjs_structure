@@ -1,0 +1,23 @@
+steps:
+  - name: 'docker'
+    args: [ 'build', '-t', 'asia.gcr.io/$PROJECT_ID/${_MY_BUILD_NAME}', '.' ]
+  # Push the container image to Container Registry
+  - name: 'docker'
+    args: [ 'push', 'asia.gcr.io/$PROJECT_ID/${_MY_BUILD_NAME}' ]
+  #  Deploy container image to Cloud Run
+  - name: 'google/cloud-sdk:alpine'
+    entrypoint: 'gcloud'
+    args:
+      - 'run'
+      - 'deploy'
+      - '${_MY_BUILD_NAME}'
+      - '--image=asia.gcr.io/$PROJECT_ID/${_MY_BUILD_NAME}'
+      - '--region=asia-northeast1'
+      - '--platform=managed'
+      - '--allow-unauthenticated'
+images:
+  - asia.gcr.io/$PROJECT_ID/${_MY_BUILD_NAME}
+substitutions:
+  _MY_BUILD_NAME: 'my-service-name'
+options:
+  machineType: 'N1_HIGHCPU_8'
